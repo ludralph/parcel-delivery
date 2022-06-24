@@ -5,7 +5,8 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors())
+app.use(cors());
+app.use(express.json());
 
 const parcels = [
     {
@@ -46,6 +47,20 @@ app.get('/parcels/:id', (req, res) => {
         res.sendStatus(404)
     }
 });
+
+app.post('/parcels', (req, res) => {
+    const parcel = req.body;
+    try{
+        
+        parcels.push(parcel);
+        res.status(201).json({data: parcel})
+    }
+    catch(err){
+        res.status(400).json({
+            err
+        })
+    }
+})
 
 
 app.listen(PORT, () => {
