@@ -9,19 +9,19 @@ app.use(cors())
 
 const parcels = [
     {
-       Id: 1,
+       id: 1,
        product: "Phone",
        description: "An Apple iPhone",
        deliveryDate: "05/06/2022",
    },
     {
-       Id: 2,
+       id: 2,
        product: "Laptop",
        description: "A MacBook Air",
        deliveryDate: "07/06/2022",
    },
     {
-       Id: 3,
+       id: 3,
        product: "Bag",
        description: "A Birkin Bag",
        deliveryDate: "08/06/2022",
@@ -34,6 +34,18 @@ app.get('/parcels', (req, res) => {
         data: parcels 
     })
 })
+
+app.get('/parcels/:id', (req, res) => {
+    const { id } = req.params;
+    console.log('Id ', id)
+    let found = parcels.find((parcel) => parcel.id === parseInt(id) )
+    if (found){
+        res.status(200).json({data: found})
+    }
+    else{
+        res.sendStatus(404)
+    }
+});
 
 
 app.listen(PORT, () => {
