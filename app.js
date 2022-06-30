@@ -5,26 +5,27 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors())
+app.use(cors());
+app.use(express.json());
 
 const parcels = [
     {
        id: 1,
        product: "Phone",
        description: "An Apple iPhone",
-       deliveryDate: "05/06/2022",
+       deliveryDate: new Date(),
    },
     {
        id: 2,
        product: "Laptop",
        description: "A MacBook Air",
-       deliveryDate: "07/06/2022",
+       deliveryDate: new Date(),
    },
     {
        id: 3,
        product: "Bag",
        description: "A Birkin Bag",
-       deliveryDate: "08/06/2022",
+       deliveryDate: new Date(),
    }
    
    ]
@@ -46,6 +47,43 @@ app.get('/parcels/:id', (req, res) => {
         res.sendStatus(404)
     }
 });
+
+app.post('/parcels', (req, res) => {
+    const parcel = req.body;
+    try{
+        
+        parcels.push(parcel);
+        res.status(201).json({data: parcel})
+    }
+    catch(err){
+        res.status(400).json({
+            err
+        })
+    }
+})
+
+app.put('/parcels/:parcelId/edit', (req, res) => {
+  let found = parcels.find((parcel) => {
+    return parcel.id === parseInt(req.params.parcelId)
+  });
+
+  if (found){
+    let updated = {
+        id: found.id,
+        product: req.body.product,
+        description: req.body.description,
+        deliveryDate: new Date()
+    };
+
+    let targetIndex = parcels.indexOf(found);
+
+    parcels.splice(targetIndex, 1, updated);
+    res.sendStatus(204)
+  }
+  else {
+    res.sendStatus(400);
+  }
+})
 
 
 app.listen(PORT, () => {
