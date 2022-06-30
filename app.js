@@ -38,7 +38,6 @@ app.get('/parcels', (req, res) => {
 
 app.get('/parcels/:id', (req, res) => {
     const { id } = req.params;
-    console.log('Id ', id)
     let found = parcels.find((parcel) => parcel.id === parseInt(id) )
     if (found){
         res.status(200).json({data: found})
@@ -49,17 +48,19 @@ app.get('/parcels/:id', (req, res) => {
 });
 
 app.post('/parcels', (req, res) => {
-    const parcel = req.body;
-    try{
-        
-        parcels.push(parcel);
-        res.status(201).json({data: parcel})
-    }
-    catch(err){
-        res.status(400).json({
-            err
-        })
-    }
+  let parcelIds = parcels.map(parcel => parcel.id);
+  let newId = parcelIds.length > 0 ? Math.max.apply(Math, parcelIds) + 1 : 1
+
+  let newParcel = {
+    id: newId,
+    product: req.body.product,
+    description: req.body.description,
+    deliveryDate: new Date()
+  }
+
+  parcels.push(newParcel)
+
+  res.status(201).json(newParcel);
 })
 
 app.put('/parcels/:parcelId/edit', (req, res) => {
@@ -83,6 +84,20 @@ app.put('/parcels/:parcelId/edit', (req, res) => {
   else {
     res.sendStatus(400);
   }
+});
+
+app.delete('/parcels/:parcelId/cancel', (req, res) => {
+    let found = parcels.find((parcel) => {
+        return parcel.id === parseInt(req.params.parcelId)
+    });
+    if (found){
+        let targetIndex = parcels.indexOf(found);
+        parcels.splice(targetIndex, 1)
+        res.sendStatus(204);
+    }
+    else{
+        res.sendStatus(400)
+    }
 })
 
 
